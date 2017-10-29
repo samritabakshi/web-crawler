@@ -1,0 +1,25 @@
+{
+  "name": "webcrawler",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Samrita",
+  "license": "ISC",
+  "dependencies": {
+    "chalk": "^2.3.0",
+    "cheerio": "^1.0.0-rc.2",
+    "clear": "0.0.1",
+    "cli-progress": "^1.6.0",
+    "clui": "^0.3.6",
+    "figlet": "^1.2.0",
+    "inquirer": "^3.3.0",
+    "minimist": "^1.2.0",
+    "preferences": "^0.2.1",
+    "prompt": "^1.0.0",
+    "request": "^2.83.0",
+    "url-parse": "^1.1.9"
+  }
+}
