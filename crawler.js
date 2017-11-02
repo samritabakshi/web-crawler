@@ -11,6 +11,7 @@ var foundWords =[];
 var promises = [];
 var bar ;
 
+//-----------------Initialise Dictionary and Local Variables -----------------------------
 e.init = function(_startUrl, _searchWord, _maxPagesToVisit){
      dict.startUrl = _startUrl;
      dict.searchWord = _searchWord;
@@ -21,6 +22,8 @@ e.init = function(_startUrl, _searchWord, _maxPagesToVisit){
      manageProgressBar('initialise');     
 }
 
+
+//-------------------Performs Actions on Progress Bar -------------------------------------
 function manageProgressBar(_state){
     switch (_state){
         case "initialise":
@@ -41,11 +44,13 @@ function manageProgressBar(_state){
         
 }
 
+
 e.startCrawling = function() {
     process(dict.startUrl)
     manageProgressBar('start');   
 }
 
+// --------------------Returns Body text of the given URL --------------------
 function fetch (_url) {
     return new Promise(function (resolve, reject) {
         request(_url, function (err, res, body) {
@@ -61,11 +66,17 @@ function fetch (_url) {
     });
 };
 
+//---------------------- Parses body of URL --------------------
 function parseBody (_body){
     $ = cheerio.load(_body);
     var bodyText = $('html > body').text().toLowerCase();
-    return [bodyText.indexOf(dict.searchWord.toLowerCase()) !== -1 , $];
+    return [searchWordIndexExists(bodyText), $];
 }
+
+function searchWordIndexExists(_bodyText){
+    return _bodyText.indexOf(dict.searchWord.toLowerCase()) !== -1 ;
+}
+
 
 function checkForWord(_result,_url){
     if(_result[0]){
@@ -77,6 +88,8 @@ function checkForWord(_result,_url){
     }
     return _result[1]   
 }
+
+//-------------------- Searches for other relative links on the page-------------------
 function searchRelativeLinksOnPage($){
     var relativeLinks = $("a[href^='/']");
     relativeLinks.each(function(){
@@ -86,6 +99,8 @@ function searchRelativeLinksOnPage($){
     return ;
 }
 
+
+//---------------------Updates the pages visited and process relative URLs---------------
 function updatePageVisited(){
     if (++dict.i < dict.pagesToVisit.length && valueLessThanMaxPagesToVisit(dict.i)) {
         dict.pagesVisited[dict.pagesToVisit[dict.i]] = true;
@@ -120,9 +135,11 @@ function process (_url){
         throw err;
     });
 }
+
 function checkForPageToBeVisited(){
     return dict.pagesToVisit.indexOf(baseUrl + $(this).attr('href')) == -1 ;
 }
+
 function showResults(){
     console.log("");
     console.log("********** Results for word :" + dict.searchWord + " ************")
