@@ -4,23 +4,19 @@ var URL = require ('url-parse');
 var http = require('http');
 var _progress = require('cli-progress');
 var e = {};
-var startUrl,searchWord,maxPagesToVisit;
-var pagesVisited = {};
-var numPagesVisited = 0;
-var pagesToVisit = [];
+var dict = require('./crawlerDictionary').crawlerDictionary;
 var url,baseUrl;
 var foundWords =[];
 var promises = [];
 var bar ;
-var i = 0;
 
 e.init = function(_startUrl, _searchWord, _maxPagesToVisit){
-     startUrl = _startUrl;
-     searchWord = _searchWord;
-     maxPagesToVisit = _maxPagesToVisit ? _maxPagesToVisit : 10;
-     url = new URL (startUrl);
+     dict.startUrl = _startUrl;
+     dict.searchWord = _searchWord;
+     dict.maxPagesToVisit = _maxPagesToVisit ? _maxPagesToVisit : 10;
+     url = new URL (dict.startUrl);
      baseUrl = url.protocol + "//" + url.hostname;
-     pagesToVisit.push(startUrl);
+     dict.pagesToVisit.push(dict.startUrl);
      manageProgressBar('initialise');     
 }
 
@@ -32,10 +28,10 @@ function manageProgressBar(_state){
             });
             break;
         case "start":
-             bar.start(maxPagesToVisit-1,0);
+             bar.start(dict.maxPagesToVisit-1,0);
             break;
         case "update":
-             bar.update(i);
+             bar.update(dict.i);
             break;
         case "stop" :
             bar.stop();
@@ -45,7 +41,7 @@ function manageProgressBar(_state){
 }
 
 e.startCrawling = function() {
-    process(startUrl)
+    process(dict.startUrl)
     manageProgressBar('start');   
 }
 
@@ -67,13 +63,13 @@ var fetch = function (_url) {
 function parseBody (_body){
     $ = cheerio.load(_body);
     var bodyText = $('html > body').text().toLowerCase();
-    return [bodyText.indexOf(searchWord.toLowerCase()) !== -1 , $];
+    return [bodyText.indexOf(dict.searchWord.toLowerCase()) !== -1 , $];
 }
 
 function checkForWord(_result,_url){
     if(_result[0]){
         var found = {
-            word : searchWord,
+            word : dict.searchWord,
             pageUrl : _url
         };
     foundWords.push(found);
@@ -83,17 +79,17 @@ function checkForWord(_result,_url){
 function searchRelativeLinksOnPage($){
     var relativeLinks = $("a[href^='/']");
     relativeLinks.each(function(){
-        if(checkForPageToBeVisited() && valueLessThanMaxPagesToVisit(numPagesVisited))
-           pagesToVisit.push(baseUrl + $(this).attr('href'))
+        if(checkForPageToBeVisited() && valueLessThanMaxPagesToVisit(dict.numPagesVisited))
+           dict.pagesToVisit.push(baseUrl + $(this).attr('href'))
     });
     return ;
 }
 
 function updatePageVisited(){
-    if (++i < pagesToVisit.length && valueLessThanMaxPagesToVisit(i)) {
-        pagesVisited[pagesToVisit[i]] = true;
-        numPagesVisited++;
-        process(pagesToVisit[i]);
+    if (++dict.i < dict.pagesToVisit.length && valueLessThanMaxPagesToVisit(dict.i)) {
+        dict.pagesVisited[dict.pagesToVisit[dict.i]] = true;
+        dict.numPagesVisited++;
+        process(dict.pagesToVisit[dict.i]);
         manageProgressBar('update')
      }
      else {
@@ -103,7 +99,7 @@ function updatePageVisited(){
 }
 
 function valueLessThanMaxPagesToVisit(_value){
-    return _value < maxPagesToVisit ? true : false
+    return _value < dict.maxPagesToVisit ? true : false
 }
 
 function process (_url){
@@ -124,11 +120,11 @@ function process (_url){
     });
 }
 function checkForPageToBeVisited(){
-    return pagesToVisit.indexOf(baseUrl + $(this).attr('href')) == -1 ;
+    return dict.pagesToVisit.indexOf(baseUrl + $(this).attr('href')) == -1 ;
 }
 function showResults(){
     console.log("");
-    console.log("********** Results for word :" + searchWord + " ************")
+    console.log("********** Results for word :" + dict.searchWord + " ************")
     if(!foundWords.length)
         console.log("No Match Found !")
     else 
