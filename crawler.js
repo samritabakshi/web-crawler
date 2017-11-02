@@ -27,6 +27,7 @@ e.init = function(_startUrl, _searchWord, _maxPagesToVisit){
 function manageProgressBar(_state){
     switch (_state){
         case "initialise":
+            console.log("");
             bar = new _progress.Bar({
                 format: 'progress [{bar}] {percentage}% |  {value}/{total} '
             });
@@ -147,7 +148,7 @@ function showResults(){
         console.log("No Match Found !")
     else 
         foundWords.forEach((el,index) => {
-            console.log(index+1 + " Found at : " + el.pageUrl)
+            console.log(index+1 + ") Found at : " + el.pageUrl)
         })
 }
 
