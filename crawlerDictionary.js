@@ -1,5 +1,6 @@
 var e = {};
-e.crawlerDictionary ={
+
+e.crawlerDictionary = {
     startUrl : '',
     searchWord : '',
     maxPagesToVisit: 10,
@@ -8,4 +9,5 @@ e.crawlerDictionary ={
     pagesVisited : {},
     numPagesVisited : 0
 }
+
 module.exports = e;

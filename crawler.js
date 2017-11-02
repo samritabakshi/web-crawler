@@ -3,8 +3,9 @@ var cheerio = require ('cheerio');
 var URL = require ('url-parse');
 var http = require('http');
 var _progress = require('cli-progress');
-var e = {};
+
 var dict = require('./crawlerDictionary').crawlerDictionary;
+var e = {};
 var url,baseUrl;
 var foundWords =[];
 var promises = [];
@@ -45,7 +46,7 @@ e.startCrawling = function() {
     manageProgressBar('start');   
 }
 
-var fetch = function (_url) {
+function fetch (_url) {
     return new Promise(function (resolve, reject) {
         request(_url, function (err, res, body) {
             if (err) {
