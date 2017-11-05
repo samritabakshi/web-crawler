@@ -33,7 +33,7 @@ function manageProgressBar(_state){
             });
             break;
         case "start":
-             bar.start(dict.maxPagesToVisit-1,0);
+             bar.start(dict.maxPagesToVisit,0);
             break;
         case "update":
              bar.update(dict.i);
@@ -47,10 +47,28 @@ function manageProgressBar(_state){
 
 
 e.startCrawling = function() {
-    process(dict.startUrl)
     manageProgressBar('start');   
+    process(dict.startUrl) 
 }
 
+function process (_url){
+    fetch(_url).then(function (body) {
+        
+       return parseBody(body);       
+    })
+    .then(result => {  
+         return checkForWord(result,_url) ;
+    })
+    .then($ => {
+        return searchRelativeLinksOnPage($);
+    })
+    .then(() =>{
+        updatePageVisited();
+    }) 
+    .catch(err => {
+        throw err;
+    });
+}
 // --------------------Returns Body text of the given URL --------------------
 function fetch (_url) {
     return new Promise(function (resolve, reject) {
@@ -103,11 +121,12 @@ function searchRelativeLinksOnPage($){
 
 //---------------------Updates the pages visited and process relative URLs---------------
 function updatePageVisited(){
-    if (++dict.i < dict.pagesToVisit.length && valueLessThanMaxPagesToVisit(dict.i)) {
+    if (dict.i < dict.pagesToVisit.length && valueLessThanMaxPagesToVisit(dict.i)) {
         dict.pagesVisited[dict.pagesToVisit[dict.i]] = true;
         dict.numPagesVisited++;
-        process(dict.pagesToVisit[dict.i]);
         manageProgressBar('update')
+        process(dict.pagesToVisit[dict.i++]);
+       
      }
      else {
         manageProgressBar('stop');
@@ -116,26 +135,10 @@ function updatePageVisited(){
 }
 
 function valueLessThanMaxPagesToVisit(_value){
-    return _value < dict.maxPagesToVisit ? true : false
+    return _value <= dict.maxPagesToVisit ? true : false
 }
 
-function process (_url){
-    fetch(_url).then(function (body) {
-       return parseBody(body);       
-    })
-    .then(result => {
-         return checkForWord(result,_url) ;
-    })
-    .then($ => {
-        return searchRelativeLinksOnPage($);
-    })
-    .then(() =>{
-        updatePageVisited();
-    }) 
-    .catch(err => {
-        throw err;
-    });
-}
+
 
 function checkForPageToBeVisited(){
     return dict.pagesToVisit.indexOf(baseUrl + $(this).attr('href')) == -1 ;
