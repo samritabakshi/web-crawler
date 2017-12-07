@@ -4,10 +4,20 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha --reporter nyan"
   },
   "author": "Samrita",
   "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/samritabakshi/web-crawler.git"
+  },
+  "keywords": [
+    "crawl",
+    "scrap",
+    "web crawler",
+    "wen scraping"
+  ],
   "dependencies": {
     "chalk": "^2.3.0",
     "cheerio": "^1.0.0-rc.2",
@@ -21,5 +31,9 @@
     "prompt": "^1.0.0",
     "request": "^2.83.0",
     "url-parse": "^1.1.9"
+  },
+  "devDependencies": {
+    "chai": "^4.1.2",
+    "mocha": "^4.0.1"
   }
 }
